@@ -4,43 +4,41 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    public class LazadaController : Controller
+    public class LazadaStatusUpdateRequest
     {
-        // GET: api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        public string tracking_number { get; set; }
+    }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+    public class LazadaStatusUpdateResponse
+    {
+        public string message { get; set; }
+        public string status_code { get; set; }
+    }
 
-        // POST api/values
+    [Route("api/[controller]")]
+    [ApiController]
+    public class LazadaController : ControllerBase
+    {
         [HttpPost]
-        public void Post([FromBody]string value)
+        public ActionResult StatusUpdate([FromBody]LazadaStatusUpdateRequest request)
         {
-        }
+            if (request != null && request.tracking_number.Equals("abc123"))
+                return StatusCode(202);
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+            return UnprocessableEntity(new LazadaStatusUpdateResponse()
+            {
+                message = "Tracking number not found",
+                    status_code="422",
+            }
+            );
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+                //return new LazadaStatusUpdateResponse()
+                //{
+                //    message = "Tracking number not found",
+                //     status_code="422",
+                // };
+            }
     }
 }
